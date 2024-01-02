@@ -1,10 +1,14 @@
-import {ContactListElement} from "../ContactListElement/ContactListElement"
+import { useContext } from 'react';
 
-export const ContactList = ({ contacts, deleteContact }) => {
+import { MyContext } from 'App';
+import { ContactListElement } from "../ContactListElement/ContactListElement"
+
+export const ContactList = () => {
+        const context = useContext(MyContext);
         return (
             <ul>
-                {contacts.map((item) => {
-                    return <ContactListElement key={item.id} data={item} deleteContact={deleteContact} />
+                {context.foundContact.map((item) => {
+                    return <ContactListElement key={item.id} data={item} />
                 })}
             </ul>
         );

@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect, createContext } from "react"
 import { nanoid } from 'nanoid';
 import { Report } from 'notiflix/build/notiflix-report-aio';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
@@ -10,34 +10,32 @@ import { ContactList } from "./components/ContactList/ContactList"
 
 import data from './data.json'
 
-export class App extends Component {
-  state = { 
-    contacts: data,
-    filter: '',
-  }
+export const MyContext = createContext();
 
-  componentDidMount() {
+
+export const App = () => {
+  const [contacts, setContacts] = useState(data);
+  const [filter, setFilter] = useState("")
+
+  useEffect(() => {
     const localContacts = localStorage.getItem("contacts");
     if (localContacts&&JSON.parse(localContacts).length>0) {
-      this.setState({
-        contacts: JSON.parse(localContacts),
-      })
+      setContacts(JSON.parse(localContacts))
     }
-  }
+  }, [])
+  
+  useEffect(() => {
+    localStorage.setItem("contacts", JSON.stringify(contacts));
+  },[contacts])
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.contacts.length !== this.state.contacts.length) {
-      localStorage.setItem("contacts", JSON.stringify(this.state.contacts));
-    }
-  }
 
-  createContact = (data) => {
+  const createContact = (data) => {
     const contact = {
       ...data,
       id: nanoid(),
     }
 
-    const twin = this.state.contacts.find(({ name }) => name.toLowerCase() === data.name.toLowerCase());
+    const twin = contacts.find(({ name }) => name.toLowerCase() === data.name.toLowerCase());
     if (twin) {
       Report.failure(
         'error',
@@ -46,40 +44,34 @@ export class App extends Component {
       );
       return;
     } else {
-      this.setState((prevState) => {
-      return {
-        contacts: [...prevState.contacts, contact],
-      }
-      })
+      setContacts((prev) => [...prev, contact])
       Notify.success('A new contact is created');
     }
   }
 
-  deleteContact = (data) => {
-    this.setState((prev) => {
-      return {contacts: prev.contacts.filter(({ id }) => id !== data),}
+  const deleteContact = (data) => {
+    setContacts((prev) => {
+      return prev.filter(({ id }) => id !== data)
     })
   }
 
-  changeFilter = (val) => {
-    this.setState({
-      filter: val,
-    })
+  const changeFilter = (val) => {
+    setFilter(val)
   }
 
-  render() {
+  const foundContact = contacts.filter(({ name }) => name.toLowerCase().includes(filter.toLowerCase()));
 
-    const foundContact = this.state.contacts.filter(({ name }) => name.toLowerCase().includes(this.state.filter.toLowerCase()));
-
-    return (
+  return (
+    <MyContext.Provider value={{foundContact,filter,createContact,changeFilter,deleteContact}}>
       <Container>
         <h1>Phonebook</h1>
-        <ContactForm data={this.createContact}/>
+        <ContactForm/>
         <h2>Contacts</h2>
-        <Filter changeFilter={this.changeFilter} filter={this.state.filter } />
-        <ContactList contacts={foundContact} deleteContact={this.deleteContact} />
+        <Filter/>
+        <ContactList/>
       </Container>
+    </MyContext.Provider>
     )
-  }
 }
+
 

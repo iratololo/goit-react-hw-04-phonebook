@@ -1,38 +1,40 @@
-import { Component } from 'react';
+import { useContext, useState } from 'react';
+
+import { MyContext } from 'App';
 
 import css from "./ContactForm.module.css"
 
-export class ContactForm extends Component {
-    state = {
-    name: '',
-    number: '', 
+export const ContactForm = () => {
+    const context = useContext(MyContext);
+
+    const [name, setName] = useState("");
+    const [number, setNumber] = useState("");
+
+    const handlerOnChange = ({ target: { name, value } }) => {
+        if (name === "name") {
+           setName(value) 
+        }
+        if (name === "number") {
+           setNumber(value) 
+        }
     }
 
-    handlerOnChange = ({target:{name, value}}) => {
-        this.setState({
-            [name]: value,
-        })
-    }
-
-    handlerOnSubmit = (e) => {
+    const handlerOnSubmit = (e) => {
         e.preventDefault();
-        this.props.data(this.state);
-        this.setState({
-            name: '',
-            number: '', 
-        })
+        context.createContact({name,number})
+        setName('');
+        setNumber(''); 
     }
-    
-    render() {
-        return (
-            <form onSubmit={this.handlerOnSubmit} className={css.form}>
+
+  return (
+            <form onSubmit={handlerOnSubmit} className={css.form}>
                 <div className={css.container}>
                     <div className={css.item}>
-                        <input onChange={this.handlerOnChange} className={css.input} id="name" type="text" name="name" value={this.state.name} required />
+                        <input onChange={handlerOnChange} className={css.input} id="name" type="text" name="name" value={name} required />
                         <label className={css.label} htmlFor="name">Name</label>
                     </div>
                     <div className={css.item}>
-                        <input onChange={this.handlerOnChange} className={css.input} id="tel" type="tel" name="number" value={this.state.number} required />
+                        <input onChange={handlerOnChange} className={css.input} id="tel" type="tel" name="number" value={number} required />
                         <label className={css.label} htmlFor="tel">Number</label>
                     </div>
                 </div>
@@ -40,5 +42,4 @@ export class ContactForm extends Component {
             </form>
             
         );
-    }
 }

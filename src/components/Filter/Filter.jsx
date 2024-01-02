@@ -1,12 +1,11 @@
-import { Component } from 'react';
+import { useContext } from 'react';
 
+import { MyContext } from 'App';
 import css from './Filter.module.css';
 
-export class Filter extends Component {
-    render() {
-        const { filter, changeFilter } = this.props;
-        return (
-            <input onChange={({target:{value}}) => {changeFilter(value)}} className={css.input} type="text" name="filter" value={filter} placeholder='Find contacts by name'/>
+export const Filter = () => {
+     const context = useContext(MyContext);
+  return (
+            <input onChange={({target:{value}}) => {context.changeFilter(value)}} className={css.input} type="text" name="filter" value={context.filter} placeholder='Find contacts by name'/>
         );
-    }
 }
