@@ -1,7 +1,6 @@
 import { useContext, useState } from 'react';
 
 import { MyContext } from 'App';
-
 import css from "./ContactForm.module.css"
 
 export const ContactForm = () => {

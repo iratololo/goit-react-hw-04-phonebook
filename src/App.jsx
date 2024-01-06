@@ -12,7 +12,6 @@ import data from './data.json'
 
 export const MyContext = createContext();
 
-
 export const App = () => {
   const [contacts, setContacts] = useState(data);
   const [filter, setFilter] = useState("")
